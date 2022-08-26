@@ -1,0 +1,2 @@
+src/ax530_top.v top=ax530_top
+src/picorv32.v
