@@ -1,3 +1,6 @@
 [submodule "Hog"]
 	path = Hog
 	url = git@gitlab.com:hog-cern/Hog.git
+[submodule "picorv32"]
+	path = picorv32
+	url = https://github.com/YosysHQ/picorv32.git
