@@ -1,5 +1,5 @@
 # ax530_picorv32
-A picorv32 playground for the ALINX AX530 dev board (this is a work-in-progress and probably won't work for you)
+A picorv32 playground for the ALINX AX530 dev board 
 
 This repo uses the [Hog (HDL-on-git)](https://gitlab.com/hog-cern/Hog) project to organize the Quartus projects.
 
@@ -19,3 +19,5 @@ Available projects:
 
 - `ax530/usb_test` - Test for the FX2LP-backed USB FIFO connection
 - `ax530/picorv32_axi` - picorv32 base project (Platform Designer-based)
+
+This is a work-in-progress and probably won't work for you. Good luck and godspeed
