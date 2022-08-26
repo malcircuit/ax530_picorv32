@@ -1,8 +1,1 @@
 src/usb_test.v top=usb_test
-
-src/picorv32.v
-src/picorv_control.v
-src/cw305_top.v
-src/registers.v
-src/usb_control.v
-src/usb_module.v
