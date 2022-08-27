@@ -1,0 +1,5 @@
+/Release/*
+!Release/bulk_xfer.hex
+!Release/bulk_xfer.iic
+/Release
+/Build
