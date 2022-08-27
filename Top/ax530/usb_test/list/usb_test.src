@@ -1,1 +1,4 @@
+ip/fifo.qip
+hdl/src/seven_seg.vhd
+hdl/src/seven_seg_scan.v
 hdl/src/usb_test.v top=usb_test

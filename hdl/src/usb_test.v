@@ -30,8 +30,10 @@ module usb_test(
         output wire [15:0] usb_fd_dup,  //! Duplicate for debugging
         output reg usb_flaga_dup,       //! Duplicate for debugging
         output reg usb_flagb_dup,       //! Duplicate for debugging
-        output reg usb_flagc_dup        //! Duplicate for debugging
+        output reg usb_flagc_dup,       //! Duplicate for debugging
 
+        output wire [7:0] SMG_Data,     //! Seven segment LED signals (active low)
+        output wire [5:0] Scan_Sig     //! Determines which segment is active (active low)
     );
 
     genvar n;
@@ -53,10 +55,45 @@ module usb_test(
         usb_flagc_dup = usb_flagc;
     end
 
+    reg  [15:0] fifo_in;
+    reg  fifo_rd = 0, fifo_wr;
+    wire fifo_empty, fifo_full;
+    wire [15:0] fifo_out;
+    wire [7:0] fifo_count;
+    reg  [23:0] rx_count;
+   
+    fifo fifo_inst (
+        .clock (        clk),
+        .aclr  (   ~reset_n),
+        .data  (    fifo_in),
+        .rdreq (    fifo_rd),
+        .wrreq (    fifo_wr),
+        .empty ( fifo_empty),
+        .full  (  fifo_full),
+        .q     (   fifo_out),
+        .usedw ( fifo_count)
+	);
+    
+    seven_seg_scan seg_scan_inst (
+        .clk       (            clk),
+        .reset_n   (        reset_n), 
+        .en        (           1'b1),
+
+        .SMG_Data  (       SMG_Data),
+        .Scan_Sig  (       Scan_Sig),
+
+        .seg_0_val (rx_count[ 3: 0]),
+        .seg_1_val (rx_count[ 7: 4]),
+        .seg_2_val (rx_count[11: 8]),
+        .seg_3_val (rx_count[15:12]),
+        .seg_4_val (rx_count[19:16]),
+        .seg_5_val (rx_count[23:20])
+    );
+
     reg [15:0] data_reg;    //! Temporary read/write data storage
 
     reg bus_busy;   //! Active high when the module is sending or receiving data
-    wire access_req = usb_flaga & usb_flagc & (bus_busy == 1'b0); //! Active high when it's possible to read or write to/from the FIFO
+    wire access_req = usb_flaga & usb_flagc & (bus_busy == 1'b0); //! Active high when it's possible to read/write from/to the FIFO
     reg usb_fd_en;  //! Tri-state output enable for `usb_fd`
 
     // Possible states
@@ -69,6 +106,33 @@ module usb_test(
 
     reg [5:0] usb_state;    //! State machine register
     reg [4:0] delay_count;  //! Used to delay state changes
+    
+    always @(negedge clk or negedge reset_n)
+    begin : fifo_rd_wr_state_machine
+        if (~reset_n)
+        begin
+            fifo_wr <= 1'b0;
+            rx_count <= 24'h000000;
+        end
+        else
+        begin
+            case(usb_state)
+                `EP2_RD_DATA:
+                begin      //EP2 FIFO Read Data
+                    if(delay_count == 8)
+                        fifo_wr <= 1'b1;
+                end
+                `EP2_RD_OVER:
+                begin
+                    if(delay_count == 4)
+                    begin
+                        fifo_wr <= 1'b0;
+                        rx_count <= {16'h0000, fifo_count};
+                    end
+                end
+            endcase
+        end
+    end
 
     always @(posedge clk or negedge reset_n)
     begin : rd_wr_state_machine
@@ -130,6 +194,8 @@ module usb_test(
                         delay_count <= 0;
                         usb_state <= `EP2_RD_OVER;
                         data_reg <= usb_fd;
+
+                        fifo_in <= usb_fd;
                     end
                     else
                     begin
