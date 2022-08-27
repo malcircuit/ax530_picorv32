@@ -1,1 +1,1 @@
-src/usb_test.v top=usb_test
+hdl/src/usb_test.v top=usb_test

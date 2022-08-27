@@ -1,2 +1,4 @@
-src/ax530_top.v top=ax530_top
-src/picorv32.v
+hdl/src/ax530_top.v top=ax530_top
+picorv32/picorv32.v
+hdl/src/picorv32_axi_top.qsys qsys
+hdl/src/picorv32_axi_hw.tcl qsys
