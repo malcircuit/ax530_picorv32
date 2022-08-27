@@ -1,3 +1,5 @@
+set_global_assignment -name SDC_FILE ../../../Top/ax530/usb_test/usb_test.sdc
+
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to reset_n
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to usb_fd[15]
