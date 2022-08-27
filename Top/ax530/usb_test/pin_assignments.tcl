@@ -1,4 +1,4 @@
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to fpga_gclk
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to clk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to reset_n
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to usb_fd[15]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to usb_fd[14]
@@ -51,8 +51,8 @@ set_location_assignment PIN_H20 -to usb_slcs
 set_location_assignment PIN_H18 -to usb_sloe
 set_location_assignment PIN_J17 -to usb_slrd
 set_location_assignment PIN_K17 -to usb_slwr
-set_location_assignment PIN_T21 -to fpga_gclk
-set_location_assignment PIN_T3 -to fpga_gclk_dup
+set_location_assignment PIN_T21 -to clk
+set_location_assignment PIN_T3 -to clk_dup
 set_location_assignment PIN_U2 -to usb_flaga_dup
 set_location_assignment PIN_V1 -to usb_flagb_dup
 set_location_assignment PIN_V2 -to usb_flagc_dup
