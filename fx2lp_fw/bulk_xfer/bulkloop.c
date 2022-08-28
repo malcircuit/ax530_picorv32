@@ -71,11 +71,11 @@ void TD_Init(void)             // Called once at startup
 
    // FLAGA,B,C functions are indexed to FIFOADDR pins (default)
    // FLAGA=Programmable Flag, FLAGB=Full Flag, FLAGC=Empty Flag
-   // FLAGD=EP4PF
+   // FLAGD=EP4EF
 	SYNCDELAY;
 	PINFLAGSAB = 0x00;
 	SYNCDELAY;
-	PINFLAGSCD = 0x50;
+	PINFLAGSCD = 0x90;
 
 	SYNCDELAY;
 	FIFOPINPOLAR = 0x00;	// all signals active low
@@ -94,8 +94,8 @@ void TD_Init(void)             // Called once at startup
 
 	SYNCDELAY;
 	// Set the EP4 programmable flag to be active when the byte count >= 1
-	EP4FIFOPFH = 0x80;
-	EP4FIFOPFL = 0x01;
+//	EP4FIFOPFH = 0x80;
+//	EP4FIFOPFL = 0x01;
 
   // out endpoints do not come up armed
   
