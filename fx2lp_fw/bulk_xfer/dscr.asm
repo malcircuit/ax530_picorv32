@@ -97,7 +97,7 @@ _HighSpeedConfigDscr:
       .db   0x02               ;; Endpoint number, and direction
       .db   ET_BULK            ;; Endpoint type
       .db   0x00               ;; Maximun packet size (LSB)
-      .db   0x02               ;; Max packect size (MSB)
+      .db   0x04               ;; Max packect size (MSB)
       .db   0x00               ;; Polling interval
 
 ;; Endpoint Descriptor
@@ -115,7 +115,7 @@ _HighSpeedConfigDscr:
       .db   0x86               ;; Endpoint number, and direction
       .db   ET_BULK            ;; Endpoint type
       .db   0x00               ;; Maximun packet size (LSB)
-      .db   0x02               ;; Max packect size (MSB)
+      .db   0x04               ;; Max packect size (MSB)
       .db   0x00               ;; Polling interval
 
 ;; Endpoint Descriptor

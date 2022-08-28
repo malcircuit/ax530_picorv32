@@ -34,10 +34,17 @@ BYTE AlternateSetting;          // Alternate settings
 void TD_Init(void)             // Called once at startup
 {
    // set the CPU clock to 48MHz
+   // output cpu clock to CLKOUT (default)
    CPUCS = ((CPUCS & ~bmCLKSPD) | bmCLKSPD1) ;
 
    // set the slave FIFO interface to 48MHz
-   IFCONFIG |= 0x40;
+   //IFCONFIG |= 0x40;
+
+   // set FIFO interface to slave synchronous
+   // use internal 48MHz clock
+   // output clock on IFCLK
+   IFCONFIG = 0xE3;
+
 
   // Registers which require a synchronization delay, see section 15.14
   // FIFORESET        FIFOPINPOLAR
@@ -62,17 +69,33 @@ void TD_Init(void)             // Called once at startup
   // default: EP6 and EP8 DIR bits are 1 (IN direction)
   // default: EP2, EP4, EP6, and EP8 are double buffered
 
-  // we are just using the default values, yes this is not necessary...
-  EP1OUTCFG = 0xA0;
-  EP1INCFG = 0xA0;
-  SYNCDELAY;                    // see TRM section 15.14
-  EP2CFG = 0xA2;
-  SYNCDELAY;                    
-  EP4CFG = 0xA0;
-  SYNCDELAY;                    
-  EP6CFG = 0xE2;
-  SYNCDELAY;                    
-  EP8CFG = 0xE0;
+   // FLAGA,B,C functions are indexed to FIFOADDR pins (default)
+   // FLAGA=Programmable Flag, FLAGB=Full Flag, FLAGC=Empty Flag
+   // FLAGD=EP4PF
+	SYNCDELAY;
+	PINFLAGSAB = 0x00;
+	SYNCDELAY;
+	PINFLAGSCD = 0x50;
+
+	SYNCDELAY;
+	FIFOPINPOLAR = 0x00;	// all signals active low
+	SYNCDELAY;
+
+	EP1OUTCFG = 0xA0;	// default
+	EP1INCFG = 0xA0;	// default
+	SYNCDELAY;
+	EP2CFG = 0xAA;	// EP2: OUT, 1024 bytes, double buffered
+	SYNCDELAY;
+	EP4CFG = 0xA0;	// EP4: OUT, 512 bytes
+	SYNCDELAY;
+	EP6CFG = 0xEA;	// EP6: IN, 1024 bytes, double buffered
+	SYNCDELAY;
+	EP8CFG = 0xE0;	// EP8: IN, 512 bytes
+
+	SYNCDELAY;
+	// Set the EP4 programmable flag to be active when the byte count >= 1
+	EP4FIFOPFH = 0x80;
+	EP4FIFOPFL = 0x01;
 
   // out endpoints do not come up armed
   
@@ -94,60 +117,60 @@ void TD_Init(void)             // Called once at startup
 
 void TD_Poll(void)              // Called repeatedly while the device is idle
 {
-  WORD i;
-  WORD count;
-
-  if(!(EP2468STAT & bmEP2EMPTY))
-  { // check EP2 EMPTY(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is empty
-     if(!(EP2468STAT & bmEP6FULL))
-     {  // check EP6 FULL(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is full
-        APTR1H = MSB( &EP2FIFOBUF );
-        APTR1L = LSB( &EP2FIFOBUF );
-
-        AUTOPTRH2 = MSB( &EP6FIFOBUF );
-        AUTOPTRL2 = LSB( &EP6FIFOBUF );
-
-        count = (EP2BCH << 8) + EP2BCL;
-
-        // loop EP2OUT buffer data to EP6IN
-        for( i = 0x0000; i < count; i++ )
-        {
-           // setup to transfer EP2OUT buffer to EP6IN buffer using AUTOPOINTER(s)
-           EXTAUTODAT2 = EXTAUTODAT1;
-        }
-        EP6BCH = EP2BCH;  
-        SYNCDELAY;  
-        EP6BCL = EP2BCL;        // arm EP6IN
-        SYNCDELAY;                    
-        EP2BCL = 0x80;          // re(arm) EP2OUT
-     }
-  }
-
-  if(!(EP2468STAT & bmEP4EMPTY))
-  { // check EP4 EMPTY(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is empty
-     if(!(EP2468STAT & bmEP8FULL))
-     {  // check EP8 FULL(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is full
-        APTR1H = MSB( &EP4FIFOBUF );
-        APTR1L = LSB( &EP4FIFOBUF );
-
-        AUTOPTRH2 = MSB( &EP8FIFOBUF );
-        AUTOPTRL2 = LSB( &EP8FIFOBUF );
-
-        count = (EP4BCH << 8) + EP4BCL;
-
-        // loop EP4OUT buffer data to EP8IN
-        for( i = 0x0000; i < count; i++ )
-        {
-           // setup to transfer EP4OUT buffer to EP8IN buffer using AUTOPOINTER(s)
-           EXTAUTODAT2 = EXTAUTODAT1;
-        }
-        EP8BCH = EP4BCH;  
-        SYNCDELAY;  
-        EP8BCL = EP4BCL;        // arm EP8IN
-        SYNCDELAY;                    
-        EP4BCL = 0x80;          // re(arm) EP4OUT
-     }
-  }
+//  WORD i;
+//  WORD count;
+//
+//  if(!(EP2468STAT & bmEP2EMPTY))
+//  { // check EP2 EMPTY(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is empty
+//     if(!(EP2468STAT & bmEP6FULL))
+//     {  // check EP6 FULL(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is full
+//        APTR1H = MSB( &EP2FIFOBUF );
+//        APTR1L = LSB( &EP2FIFOBUF );
+//
+//        AUTOPTRH2 = MSB( &EP6FIFOBUF );
+//        AUTOPTRL2 = LSB( &EP6FIFOBUF );
+//
+//        count = (EP2BCH << 8) + EP2BCL;
+//
+//        // loop EP2OUT buffer data to EP6IN
+//        for( i = 0x0000; i < count; i++ )
+//        {
+//           // setup to transfer EP2OUT buffer to EP6IN buffer using AUTOPOINTER(s)
+//           EXTAUTODAT2 = EXTAUTODAT1;
+//        }
+//        EP6BCH = EP2BCH;
+//        SYNCDELAY;
+//        EP6BCL = EP2BCL;        // arm EP6IN
+//        SYNCDELAY;
+//        EP2BCL = 0x80;          // re(arm) EP2OUT
+//     }
+//  }
+//
+//  if(!(EP2468STAT & bmEP4EMPTY))
+//  { // check EP4 EMPTY(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is empty
+//     if(!(EP2468STAT & bmEP8FULL))
+//     {  // check EP8 FULL(busy) bit in EP2468STAT (SFR), core set's this bit when FIFO is full
+//        APTR1H = MSB( &EP4FIFOBUF );
+//        APTR1L = LSB( &EP4FIFOBUF );
+//
+//        AUTOPTRH2 = MSB( &EP8FIFOBUF );
+//        AUTOPTRL2 = LSB( &EP8FIFOBUF );
+//
+//        count = (EP4BCH << 8) + EP4BCL;
+//
+//        // loop EP4OUT buffer data to EP8IN
+//        for( i = 0x0000; i < count; i++ )
+//        {
+//           // setup to transfer EP4OUT buffer to EP8IN buffer using AUTOPOINTER(s)
+//           EXTAUTODAT2 = EXTAUTODAT1;
+//        }
+//        EP8BCH = EP4BCH;
+//        SYNCDELAY;
+//        EP8BCL = EP4BCL;        // arm EP8IN
+//        SYNCDELAY;
+//        EP4BCL = 0x80;          // re(arm) EP4OUT
+//     }
+//  }
 }
 
 BOOL TD_Suspend(void)          // Called before the device goes into suspend mode
