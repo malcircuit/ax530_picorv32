@@ -69,14 +69,18 @@ void TD_Init(void)             // Called once at startup
   // default: EP6 and EP8 DIR bits are 1 (IN direction)
   // default: EP2, EP4, EP6, and EP8 are double buffered
 
-   // FLAGA,B,C functions are indexed to FIFOADDR pins (default)
-   // FLAGA=Programmable Flag, FLAGB=Full Flag, FLAGC=Empty Flag
-   // FLAGD=EP4EF
+   // FLAGx pin functions are fixed
+   // FLAGA = EP2 Empty Flag
+   // FLAGB = EP4 Empty Flag
+   // FLAGC = EP6 Full Flag
+   // FLAGD = EP8 Full Flag
 	SYNCDELAY;
-	PINFLAGSAB = 0x00;
+	PINFLAGSAB = 0x98;
 	SYNCDELAY;
-	PINFLAGSCD = 0x90;
+	PINFLAGSCD = 0xFE;
 
+	SYNCDELAY;
+	PORTACFG = 0x80;		// set PA7 to be FLAGD
 	SYNCDELAY;
 	FIFOPINPOLAR = 0x00;	// all signals active low
 	SYNCDELAY;
@@ -93,11 +97,21 @@ void TD_Init(void)             // Called once at startup
 	EP8CFG = 0xE0;	// EP8: IN, 512 bytes
 
 	SYNCDELAY;
-	// Set the EP4 programmable flag to be active when the byte count >= 1
-//	EP4FIFOPFH = 0x80;
-//	EP4FIFOPFL = 0x01;
 
-  // out endpoints do not come up armed
+  // handle the case where we were already in AUTO mode...
+  EP2FIFOCFG = 0x00;            // AUTOOUT=0, WORDWIDE=0
+  EP4FIFOCFG = 0x00;            // AUTOOUT=0, WORDWIDE=0
+  SYNCDELAY;
+  EP2FIFOCFG = 0x11;            // AUTOOUT=1, WORDWIDE=1
+  EP4FIFOCFG = 0x11;            // AUTOOUT=1, WORDWIDE=1
+  SYNCDELAY;
+
+  EP6FIFOCFG = 0x00;            // AUTOIN=0, WORDWIDE=0
+  EP8FIFOCFG = 0x00;            // AUTOIN=0, WORDWIDE=0
+  SYNCDELAY;
+  EP6FIFOCFG = 0x09;            // AUTOIN=1, WORDWIDE=1
+  EP8FIFOCFG = 0x09;            // AUTOIN=1, WORDWIDE=1
+  SYNCDELAY;
   
   // since the defaults are double buffered we must write dummy byte counts twice
   SYNCDELAY;                    
@@ -111,6 +125,17 @@ void TD_Init(void)             // Called once at startup
 
   // enable dual autopointer feature
   AUTOPTRSETUP |= 0x01;
+
+  // Reset all the FIFOs
+  FIFORESET = 0x80;	// NAK-ALL
+  SYNCDELAY;
+  FIFORESET = 0x84;   // reset EP4
+  SYNCDELAY;
+  FIFORESET = 0x02;	// reset EP2, clear EP memory (no NAK bit)
+  SYNCDELAY;
+  FIFORESET = 0x00;	// release NAK-ALL
+  SYNCDELAY;
+
 
 }
 
