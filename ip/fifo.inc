@@ -16,16 +16,16 @@
 
 FUNCTION fifo 
 (
-	aclr,
-	clock,
 	data[15..0],
+	rdclk,
 	rdreq,
+	wrclk,
 	wrreq
 )
 
 RETURNS (
-	empty,
-	full,
 	q[15..0],
-	usedw[7..0]
+	rdempty,
+	rdusedw[7..0],
+	wrfull
 );

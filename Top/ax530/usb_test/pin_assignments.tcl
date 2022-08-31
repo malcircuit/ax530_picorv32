@@ -61,15 +61,15 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to usb_pktend
 
 set_location_assignment PIN_Y2 -to usb_ifclk_dup
 set_location_assignment PIN_V4 -to usb_flaga_dup
-set_location_assignment PIN_R6 -to usb_flagb_dup
-set_location_assignment PIN_V2 -to usb_flagc_dup
-set_location_assignment PIN_V1 -to usb_flagd_dup
-set_location_assignment PIN_U2 -to usb_slwr_dup
-set_location_assignment PIN_T3 -to usb_slrd_dup
-set_location_assignment PIN_P5 -to usb_sloe_dup
-set_location_assignment PIN_R2 -to usb_pktend_dup
-set_location_assignment PIN_P3 -to usb_fifoaddr_dup[0]
-set_location_assignment PIN_P1 -to usb_fifoaddr_dup[1]
+set_location_assignment PIN_Y1 -to usb_flagb_dup
+set_location_assignment PIN_R6 -to usb_flagc_dup
+set_location_assignment PIN_V2 -to usb_flagd_dup
+set_location_assignment PIN_V1 -to usb_slwr_dup
+set_location_assignment PIN_U2 -to usb_slrd_dup
+set_location_assignment PIN_T3 -to usb_sloe_dup
+set_location_assignment PIN_P5 -to usb_pktend_dup
+set_location_assignment PIN_R2 -to usb_fifoaddr_dup[0]
+set_location_assignment PIN_P3 -to usb_fifoaddr_dup[1]
 
 set_location_assignment PIN_AA1 -to usb_fd_dup[0]
 set_location_assignment PIN_V3 -to usb_fd_dup[1]

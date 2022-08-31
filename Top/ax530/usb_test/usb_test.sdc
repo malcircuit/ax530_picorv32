@@ -20,7 +20,7 @@
 ## PROGRAM "Quartus Prime"
 ## VERSION "Version 21.1.1 Build 850 06/23/2022 SJ Lite Edition"
 
-## DATE    "Fri Aug 26 20:00:51 2022"
+## DATE    "Sun Aug 28 22:04:57 2022"
 
 ##
 ## DEVICE  "EP4CE30F23C8"
@@ -40,6 +40,7 @@ set_time_format -unit ns -decimal_places 3
 #**************************************************************
 
 create_clock -name {clk} -period 20.000 -waveform { 0.000 10.000 } [get_ports {clk}]
+create_clock -name {usb_ifclk} -period 20.833 -waveform { 0.000 10.416 } [get_ports {usb_ifclk}]
 
 
 #**************************************************************

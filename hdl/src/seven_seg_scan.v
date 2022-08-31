@@ -46,8 +46,8 @@ module seven_seg_scan
         endcase
     end
 
-    always @ (posedge clk or negedge reset_n) begin : shift_reg_on_slow_clk
-        if(!reset_n) begin
+    always @ (posedge clk) begin : shift_reg_on_slow_clk
+        if(~reset_n) begin
             count <= 16'd0;
             shift_reg <= 6'b000001;
         end else if(count == count_limit) begin
