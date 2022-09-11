@@ -1,4 +1,5 @@
 fifo	fifo_inst (
+	.aclr ( aclr_sig ),
 	.data ( data_sig ),
 	.rdclk ( rdclk_sig ),
 	.rdreq ( rdreq_sig ),
@@ -6,6 +7,9 @@ fifo	fifo_inst (
 	.wrreq ( wrreq_sig ),
 	.q ( q_sig ),
 	.rdempty ( rdempty_sig ),
+	.rdfull ( rdfull_sig ),
 	.rdusedw ( rdusedw_sig ),
-	.wrfull ( wrfull_sig )
+	.wrempty ( wrempty_sig ),
+	.wrfull ( wrfull_sig ),
+	.wrusedw ( wrusedw_sig )
 	);

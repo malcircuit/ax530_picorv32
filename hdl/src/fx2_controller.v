@@ -180,7 +180,16 @@ module fx2_controller(
                     //     fx2_fifoaddr <= BLK_TX_ADDR;
                     // end
                 end
-                READING: begin
+                READING: begin                    
+                    if (fx2_sloe) begin // Make sure the output enable is active
+                        fx2_sloe <= 0;                    
+                    end else begin // wait 1 cycle to read the first word before incrementing the rd pointer
+                        command_rx_valid <= 1;
+
+                        if (fx2_slrd) 
+                            fx2_slrd <= 0;
+                    end 
+                    
                     if (command_rx_stopped | ~fx2_flagb) begin   // if the receiver stops OR the FIFO is empty, stop reading and go back to idle
                         fx2_sloe <= 1;
                         fx2_slrd <= 1;
@@ -189,15 +198,6 @@ module fx2_controller(
                         command_rx_valid <= 0;                    
                         command_rx_req <= 0;
                         main_state <= IDLE;
-                    end 
-                    
-                    if (fx2_sloe) begin // Make sure the output enable is active
-                        fx2_sloe <= 0;                    
-                    end else begin // wait 1 cycle to read the first word before incrementing the rd pointer
-                        command_rx_valid <= 1;
-
-                        if (fx2_slrd) 
-                            fx2_slrd <= 0;
                     end 
                 end
                 // WRITING: begin

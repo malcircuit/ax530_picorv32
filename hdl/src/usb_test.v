@@ -104,12 +104,12 @@ module usb_test(
         .debounced_reset (debounced_rst)
     );
 
-    wire fifo_empty, fifo_full;
+    wire fifo_wr_full, fifo_wr_empty;
+    // wire fifo_rd_full, fifo_rd_empty;
     wire [15:0] fifo_out;
     wire [7:0] fifo_count;
     reg  [23:0] rx_count;
 
-    
     wire [15:0]  command_rx_data;
     wire         command_rx_req;
     reg          command_rx_ack = 0;
@@ -120,34 +120,45 @@ module usb_test(
     wire command_rx_active  =  command_rx_req &  command_rx_ack;
 
     always @(negedge usb_ifclk) begin
-        if (command_rx_pending & ~fifo_full) begin
+        if (internal_reset) begin
+            rx_count[7:0] <= 0;    
+        end
+
+        if (command_rx_pending & ~fifo_wr_full) begin
             command_rx_ack <= 1;
         end
         
-        if (command_rx_stopped | fifo_full) begin
+        if (command_rx_stopped | fifo_wr_full) begin
             command_rx_ack <= 0;
-            rx_count[7:0] <= fifo_count;
+            rx_count[7:0] <= fifo_count + !fifo_wr_empty;
         end
     end
 
     // Set the fifo write clock to be negedge usb_ifclk, gated to command_rx_active & command_rx_valid
-    wire fifo_wr_clk = ~usb_ifclk & command_rx_active & command_rx_valid;
+    wire fifo_wr_clk = usb_ifclk & command_rx_active & command_rx_valid;
    
     fifo fifo_inst (
-        .data       ( command_rx_data),
+        .aclr       (  internal_reset),
+
         .rdclk      (             clk),
-        .rdreq      (  command_rx_req),
-        .wrclk      (     fifo_wr_clk),
-        .wrreq      (            1'b0),
         .q          (        fifo_out),
-        .rdempty    (      fifo_empty),
-        .rdusedw    (      fifo_count),
-        .wrfull     (       fifo_full)
+        .rdreq      (            1'b0),
+        // .rdempty    (      fifo_empty),
+        // .rdfull     (                ),
+        // .rdusedw    (                ),
+
+        .wrclk      (     fifo_wr_clk),
+        .wrreq      (  command_rx_req),
+        .data       ( command_rx_data),
+        .wrfull     (    fifo_wr_full),
+        .wrempty    (   fifo_wr_empty),
+        .wrusedw    (      fifo_count)
 	);
+
 
     fx2_controller fx2_ctrl (
         .reset              (internal_reset),
-        .fx2_ifclk          (    usb_ifclk), 
+        .fx2_ifclk          (   ~usb_ifclk), 
         .fx2_flaga          (    usb_flaga),     
         .fx2_flagb          (    usb_flagb),     
         .fx2_flagc          (    usb_flagc),      

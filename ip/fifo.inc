@@ -16,6 +16,7 @@
 
 FUNCTION fifo 
 (
+	aclr,
 	data[15..0],
 	rdclk,
 	rdreq,
@@ -26,6 +27,9 @@ FUNCTION fifo
 RETURNS (
 	q[15..0],
 	rdempty,
+	rdfull,
 	rdusedw[7..0],
-	wrfull
+	wrempty,
+	wrfull,
+	wrusedw[7..0]
 );
