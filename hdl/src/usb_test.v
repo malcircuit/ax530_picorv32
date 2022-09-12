@@ -73,8 +73,8 @@ module usb_test(
     generate
         for (n = 0; n < 16; n = n  +  1)
         begin : usb_fd_tri_state_mux
-            assign usb_fd[n]     = usb_sloe ?         1'bZ : fx2_fd_out[n];
-            assign usb_fd_dup[n] = usb_sloe ? fx2_fd_in[n] : fx2_fd_out[n];
+            assign usb_fd[n]     = usb_sloe ? fx2_fd_out[n] :         1'bZ;
+            assign usb_fd_dup[n] = usb_sloe ? fx2_fd_out[n] : fx2_fd_in[n];
         end
     endgenerate
 
@@ -135,7 +135,7 @@ module usb_test(
     end
 
     // Set the fifo write clock to be negedge usb_ifclk, gated to command_rx_active & command_rx_valid
-    wire fifo_wr_clk = usb_ifclk & command_rx_active & command_rx_valid;
+    wire fifo_wr_clk = usb_ifclk & command_rx_valid;
    
     fifo fifo_inst (
         .aclr       (  internal_reset),
